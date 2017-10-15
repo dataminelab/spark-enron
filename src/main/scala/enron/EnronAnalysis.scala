@@ -57,7 +57,9 @@ object EnronAnalysis {
    *  Hint2: consider using method `sortBy`
    */
   def emailsPerUser(rdd: RDD[EnronEmail]): Array[(String, Int)] = {
-    ???
+    rdd.map(ee => (ee.sender, 1)).
+      reduceByKey(_+_).
+      sortBy(((t: (String, Int)) => t._2), ascending = false).collect()
   }
 
   /** Returns the number of emails on which the keyword `keyword` occurs.
@@ -65,33 +67,35 @@ object EnronAnalysis {
     *  Hint2: consider using method `containsKeyword` on `EnronEmail`
     */
   def occurrencesOfKeyword(lang: String, rdd: RDD[EnronEmail]): Int = {
-    ???
+    rdd.filter(_.containsKeyword(lang)).count().toInt
   }
 
   /** Compute an inverted index of the set of emails, mapping each keyword
    * to the Enron emails in which it occurs.
    */
   def makeInvertedIndex(keywords: List[String], rdd: RDD[EnronEmail]): RDD[(String, Iterable[EnronEmail])] = {
-    ???
+    reverseIndex(rdd, keywords).groupByKey()
   }
 
   /** Helpful method, which can be reused between makeInvertedIndex and rankKeywordsUsingIndex
    * Consider caching the results using `cache`
    */
   private def reverseIndex(rdd: RDD[EnronEmail], keywords: List[String]): RDD[(String, EnronEmail)] = {
-    ???
+    rdd.flatMap(
+      (w: EnronEmail) => keywords.filter(w.containsKeyword(_)).map((keyword) => (keyword, w))
+    ).cache()
   }
 
   /** Compute the keywords ranking using the inverted index.
      */
   def rankKeywordsUsingIndex(index: RDD[(String, Iterable[EnronEmail])]): List[(String, Int)] = {
-    ???
+    index.mapValues(_.size).sortBy(_._2, false).collect().toList
   }
 
   /** Use `reduceByKey` so that the computation of the index and the ranking are combined.
    */
   def rankKeywordsReduceByKey(keywords: List[String], rdd: RDD[EnronEmail]): List[(String, Int)] = {
-    ???
+    reverseIndex(rdd, keywords).mapValues(_ => 1).reduceByKey(_ + _).sortBy(-_._2).collect().toList
   }
 
   def main(args: Array[String]) {
