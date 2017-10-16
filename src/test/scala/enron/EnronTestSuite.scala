@@ -36,12 +36,12 @@ class EnronTestSuite extends FunSuite with BeforeAndAfterAll {
     assert(initializeEnronAnalysis())
     import EnronAnalysis._
     val topic1 = List("message", "attach")
-    val articles = List(
+    val emails = List(
       EnronEmail(sender = "ceo@enron.com", subject = "Subject 1", body = "Thanks for your attachment"),
       EnronEmail(sender = "ceo@enron.com", subject = "See attached", body = "See attached"),
       EnronEmail(sender = "ceo@enron.com", subject = "Subject 2 message", body = "Thanks for doing business with us")
       )
-    val rdd = sc.parallelize(articles)
+    val rdd = sc.parallelize(emails)
     val index = makeInvertedIndex(topic1, rdd)
     val res = index.count() == 2
     assert(res)
