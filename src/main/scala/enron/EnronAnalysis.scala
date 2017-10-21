@@ -61,10 +61,10 @@ object EnronAnalysis {
   }
 
   /** Returns the number of emails on which the keyword `keyword` occurs.
-    *  Hint1: consider using method `aggregate` on RDD[T].
+    *  Hint1: consider using method `filter` on RDD[T]
     *  Hint2: consider using method `containsKeyword` on `EnronEmail`
     */
-  def occurrencesOfKeyword(lang: String, rdd: RDD[EnronEmail]): Int = {
+  def occurrencesOfKeyword(keyword: String, rdd: RDD[EnronEmail]): Long = {
     ???
   }
 

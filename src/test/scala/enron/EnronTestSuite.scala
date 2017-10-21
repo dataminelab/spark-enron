@@ -27,9 +27,21 @@ class EnronTestSuite extends FunSuite with BeforeAndAfterAll {
   test("'occurrencesOfKeyword' should work for (specific) RDD with one element") {
     assert(initializeEnronAnalysis())
     import EnronAnalysis._
-    val rdd = sc.parallelize(Seq(EnronEmail(sender = "ceo@enron.com", subject = "Fraud", body = "Thanks for doing business with us")))
+    val rdd = sc.parallelize(Seq(EnronEmail(sender = "ceo@enron.com", subject = "Fraud", body = "Thanks for doing business with us"),
+      EnronEmail(sender = "ceo@enron.com", subject = "Hello", body = "Thanks for doing business with us")))
     val res = (occurrencesOfKeyword("Fraud", rdd) == 1)
     assert(res, "occurrencesOfKeyword given (specific) RDD with one element should equal to 1")
+  }
+
+  test("'emailsPerUser'") {
+    assert(initializeEnronAnalysis())
+    import EnronAnalysis._
+    val rdd = sc.parallelize(Seq(EnronEmail(sender = "ceo@enron.com", subject = "Fraud", body = "Thanks for doing business with us"),
+      EnronEmail(sender = "cto@enron.com", subject = "Hello", body = "Thanks for doing business with us"),
+      EnronEmail(sender = "cto@enron.com", subject = "Hello", body = "Thanks for doing business with us")
+    ))
+    val results = emailsPerUser(rdd).take(10)
+    assert(results.length == 2)
   }
 
   test("'makeInvertedIndex' creates a simple index with two entries") {
